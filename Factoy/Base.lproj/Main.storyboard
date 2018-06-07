@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vhU-La-J26">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -13,7 +13,7 @@
         <!--Factory-->
         <scene sceneID="z1x-zj-xth">
             <objects>
-                <tableViewController id="8pn-6Q-l81" sceneMemberID="viewController">
+                <tableViewController id="8pn-6Q-l81" customClass="PreviewDataTableViewController" customModule="Factoy" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="0W0-f7-DfS">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -26,7 +26,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="63.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vNC-fl-2iN">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Image1" translatesAutoresizingMaskIntoConstraints="NO" id="vNC-fl-2iN">
                                             <rect key="frame" x="0.0" y="-4" width="106" height="68"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
@@ -60,7 +60,7 @@
         <!--New Story-->
         <scene sceneID="Goo-J9-JOF">
             <objects>
-                <viewController id="5ja-j9-VxI" sceneMemberID="viewController">
+                <viewController id="5ja-j9-VxI" customClass="DataViewController" customModule="Factoy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="g2D-8u-hV1">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -88,11 +88,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <viewLayoutGuide key="safeArea" id="iCq-r3-mix"/>
                     </view>
-                    <navigationItem key="navigationItem" title="New Story" id="vrJ-RU-v2B">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Factory" id="fnA-9E-7w1">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="New Story" id="vrJ-RU-v2B"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6gU-kR-tET" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -147,4 +143,7 @@
             <point key="canvasLocation" x="1823" y="484"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Image1" width="160" height="120"/>
+    </resources>
 </document>
