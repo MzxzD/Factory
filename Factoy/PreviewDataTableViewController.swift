@@ -7,6 +7,25 @@
 //
 
 import UIKit
+import Alamofire
+import AlamofireImage
+
+let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
+
+struct JSONData:Codable {
+    var articles: String
+    var title: String
+    var description: String
+    var urlToImage: String
+    var url: String
+}
+let articles = "articles"
+let title = "title"
+let story = "description"
+let urltostory = "url"
+let image = "urlToImage"
+
+var StoryData = [JSONData]()
 
 class PreviewDataTableViewController: UITableViewController {
 
@@ -21,7 +40,12 @@ class PreviewDataTableViewController: UITableViewController {
         
         
         //Load sample pewview
-        loadSamplePreview()
+        
+        if LoadPreview() {}
+        else {
+            loadSamplePreview()
+        }
+
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -156,14 +180,66 @@ class PreviewDataTableViewController: UITableViewController {
             
         }
         
-        
-        
-        
-        
-        
          PreviewData += [preview1, preview2, preview3]
     }
-    
-    
+    // MARK: Function for loading Data from URL
+    private func LoadPreview() -> Bool {
+        
+        var bool = true
+        
+        // Validating URL response
+        Alamofire.request(url).validate().responseJSON { response in
+            
+            switch response.result {
+                
+            case .success:
+                print("Validation Successful")
+                bool = true
+                
+                // Parsing data
+                let JSON = response.result.value as! [String: Any]
+                let JSONArticles = JSON[articles] as! NSArray
+                for Articles in JSONArticles {
+                    
+                    // Saving important values
+                    var Values = Articles as! [String: String]
+                    let headline = Values["title"] as! String
+                    let photo_string = Values["urlToImage"] as! String
+                    var photo = UIImage(named: "image1")
+                    
+                    // Downloading image
+                    Alamofire.download(photo_string).responseData(completionHandler: { (response) in
+                        if let data = response.result.value{
+                            photo = UIImage(data: data)
+                        }
+                        
+                    })
+                    
+                    var story = Values["description"] as! String
+                    story += "\n"
+                    story += Values["url"] as! String
+                    
+                    // Saving Values in preview Object
+                    guard let previewx = Preview(headline: headline, photo: photo, story: story)
+                        else {
+                            fatalError("Unable to instantianite preview")
+                    }
+                    print(previewx.headline)
+                    print(previewx.story)
+                    
+                    //Pusing into Object array
+                    self.PreviewData += [previewx]
+                }
+                
+               
+                
+            case .failure(let error):
+                print(error)
+                bool = false
+            }
+        }
+        
+        return bool
+    }
 
 }
