@@ -8,24 +8,9 @@
 
 import UIKit
 import Alamofire
-import AlamofireImage
 
 let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
 
-struct JSONData:Codable {
-    var articles: String
-    var title: String
-    var description: String
-    var urlToImage: String
-    var url: String
-}
-let articles = "articles"
-let title = "title"
-let story = "description"
-let urltostory = "url"
-let image = "urlToImage"
-
-var StoryData = [JSONData]()
 
 class PreviewDataTableViewController: UITableViewController {
 
@@ -198,7 +183,7 @@ class PreviewDataTableViewController: UITableViewController {
                 
                 // Parsing data
                 let JSON = response.result.value as! [String: Any]
-                let JSONArticles = JSON[articles] as! NSArray
+                let JSONArticles = JSON["articles"] as! NSArray
                 for Articles in JSONArticles {
                     
                     // Saving important values
