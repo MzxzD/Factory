@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import AlamofireImage
 
 let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
 
@@ -18,8 +19,8 @@ class PreviewDataTableViewController: UITableViewController {
     // MARK: Properties
     
     var PreviewData = [Preview]()
-    
-    
+    var picture: UIImage?
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -167,6 +168,7 @@ class PreviewDataTableViewController: UITableViewController {
         
          PreviewData += [preview1, preview2, preview3]
     }
+
     // MARK: Function for loading Data from URL
     private func LoadPreview() -> Bool {
         
@@ -190,7 +192,10 @@ class PreviewDataTableViewController: UITableViewController {
                     var Values = Articles as! [String: String]
                     let headline = Values["title"] as! String
                     let photo_string = Values["urlToImage"] as! String
-                    var photo = UIImage(named: "image1")
+                    var story = Values["description"] as! String
+                    story += "\n"
+                    story += Values["url"] as! String
+              /*      var photo = UIImage(named: "image1")
                     
                     // Downloading image
                     Alamofire.download(photo_string).responseData(completionHandler: { (response) in
@@ -198,22 +203,42 @@ class PreviewDataTableViewController: UITableViewController {
                             photo = UIImage(data: data)
                         }
                         
-                    })
+                    })*/
+                    var photoURL = URL(string: photo_string)
                     
-                    var story = Values["description"] as! String
-                    story += "\n"
-                    story += Values["url"] as! String
-                    
-                    // Saving Values in preview Object
-                    guard let previewx = Preview(headline: headline, photo: photo, story: story)
-                        else {
-                            fatalError("Unable to instantianite preview")
+                    Alamofire.request(photoURL!).responseImage { response in
+               //         debugPrint(response)
+                        
+               //         print(response.request)
+                        print(response.response)
+            //            debugPrint(response.result)
+                        
+                        if let image = response.result.value {
+                            print("image downloaded: \(image)")
+                            // Saving Values in preview Object
+                            guard let previewx = Preview(headline: headline, photo: image, story: story)
+                                else {
+                                    fatalError("Unable to instantianite preview")
+                            }
+                            self.PreviewData += [previewx]
+                            DispatchQueue.main.async{
+                                self.tableView.reloadData()
+                            }
+                            
+                            
+                        }
                     }
-                    print(previewx.headline)
-                    print(previewx.story)
+                    
+                    
+                    
+
+                    
+
+           //         print(previewx.headline)
+             //       print(previewx.story)
                     
                     //Pusing into Object array
-                    self.PreviewData += [previewx]
+
                 }
                 
                
