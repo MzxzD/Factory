@@ -34,11 +34,13 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    {
         
         // Table view cell are used and should be dequeued using a cell identifier
         let cellIdentifier = "PreviewDataTableViewCell"
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? PreviewDataTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? PreviewDataTableViewCell else
+        {
             //fatalError("The dequeued cell is not an instance of MealTableViewCell.")
             errorOccured(value: "The dequeued cell is not an instance of MealTableViewCell.")
             return UITableViewCell()
@@ -55,34 +57,39 @@ class PreviewDataTableViewController: UITableViewController {
     
     
     // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        super.prepare(for: segue, sender: sender)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?)
+    {
+            super.prepare(for: segue, sender: sender)
         
-        guard let previewDetailViewController = segue.destination as? DataViewController else {
-            //fatalError("Unexpected destination \(segue.destination)")
-            errorOccured(value: "Unexpected destination!")
-            return
-        }
+            guard let previewDetailViewController = segue.destination as? DataViewController else
+            {
+                //fatalError("Unexpected destination \(segue.destination)")
+                errorOccured(value: "Unexpected destination!")
+                return
+            }
         
-        guard let selectedPreviewCell = sender as? PreviewDataTableViewCell else {
-            //fatalError("Unexpeced sender: \(sender!)")
-            errorOccured(value: "Unexpeced sender!")
-            return
+            guard let selectedPreviewCell = sender as? PreviewDataTableViewCell else
+            {
+                //fatalError("Unexpeced sender: \(sender!)")
+                errorOccured(value: "Unexpeced sender!")
+                return
             
-        }
+            }
         
-        guard let indexPath = tableView.indexPath(for: selectedPreviewCell) else {
-            // fatalError("The selected cellis not being displayed by the table")
-            errorOccured(value: "The selected cellis not being displayed by the table")
-            return
-        }
+            guard let indexPath = tableView.indexPath(for: selectedPreviewCell) else
+            {
+                // fatalError("The selected cellis not being displayed by the table")
+                errorOccured(value: "The selected cellis not being displayed by the table")
+                return
+            }
         
-        let selectedPreview = previewData[indexPath.row]
-        previewDetailViewController.preview = selectedPreview
+            let selectedPreview = previewData[indexPath.row]
+            previewDetailViewController.preview = selectedPreview
     }
     
     // MARK: Function for Activity Indicator
-    func createLoadingIndicator() {
+    func createLoadingIndicator()
+    {
         loadingIndicator.center = view.center
         loadingIndicator.color = UIColor.blue
         loadingIndicator.startAnimating()
@@ -90,59 +97,70 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     // MARK: Function for loading Data from URL
-    private func LoadPreview() {
-        // Validating URL response
+    private func LoadPreview()
+    {
         
+        // Validating URL response
         let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
         Alamofire.request(url)
             .validate()
-            .responseJSON { response in
-                
+            .responseJSON
+            {
+                response in
                 switch response.result
                 {
-                case .success:
-                    print("Validation Successful")
-                    // Parsing data
-                    let JSON = response.result.value as! [String: Any]
-                    let JSONArticles = JSON["articles"] as! NSArray
-                    for Articles in JSONArticles
-                    {
-                        // Saving important values
-                        var Values = Articles as! [String: String]
-                        let headline = Values["title"] as! String
-                        let photo_string = Values["urlToImage"] as! String
-                        var story = Values["description"] as! String
-                        story += "\n"
-                        story += Values["url"] as! String
-                        let photoURL = URL(string: photo_string)
-                        
-                        Alamofire.request(photoURL!)
-                            .downloadProgress(closure: { (progress) in
-                                DispatchQueue.main.async {
-                                    self.loadingIndicator.stopAnimating()
-                                    self.tableView.reloadData()
-                                }
-                            })
-                            .responseImage
-                            { response in
-                                if let image = response.result.value
+                    case .success:
+                        print("Validation Successful")
+                        // Parsing data
+                        let JSON = response.result.value as! [String: Any]
+                        let JSONArticles = JSON["articles"] as! NSArray
+                        for Articles in JSONArticles
+                        {
+                            // Saving important values
+                            var Values = Articles as! [String: String]
+                            let headline = Values["title"] as! String
+                            let photo_string = Values["urlToImage"] as! String
+                            var story = Values["description"] as! String
+                            story += "\n"
+                            story += Values["url"] as! String
+                            let photoURL = URL(string: photo_string)
+                            
+                            Alamofire.request(photoURL!)
+                                .downloadProgress(closure:
+                                    {
+                                        (progress) in
+                                        DispatchQueue.main.async
+                                            {
+                                                self.loadingIndicator.stopAnimating()
+                                                self.tableView.reloadData()
+                                            }
+                                })
+                                .responseImage
                                 {
-                                    // Saving Values in preview Object
-                                    guard let previewx = Preview(headline: headline, photo: image, story: story)
-                                        else {
-                                            //fatalError("Unable to instantianite preview")
-                                            errorOccured()
-                                            return
+                                    response in
+                                    if let image = response.result.value
+                                    {
+                                        // Saving Values in preview Object
+                                        guard let previewx = Preview(headline: headline, photo: image, story: story)
+                                            else {
+                                                //fatalError("Unable to instantianite preview")
+                                                errorOccured()
+                                                return
+                                        }
+                                        self.previewData += [previewx]
                                     }
-                                    self.previewData += [previewx]
                                 }
                         }
-                    }
                     
-                case .failure(let error):
-                    errorOccured(value: error)
+                    case .failure(let error):
+                        errorOccured(value: error)
                 }
-        }
+            }
+        
+        
     }
+    
+    
+    
 }
 
