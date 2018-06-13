@@ -26,6 +26,9 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
             photoImageView.image = preview.photo
             storyText.text = preview.story
             
+        }else
+        {
+            errorOccured()
         }
     }
 
