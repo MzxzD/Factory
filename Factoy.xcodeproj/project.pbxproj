@@ -14,7 +14,7 @@
 		CF05C94D20C7D98400848A59 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF05C94B20C7D98400848A59 /* Main.storyboard */; };
 		CF05C94F20C7D98400848A59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF05C94E20C7D98400848A59 /* Assets.xcassets */; };
 		CF05C95220C7D98400848A59 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF05C95020C7D98400848A59 /* LaunchScreen.storyboard */; };
-		CF8A999220C93CD200E56D0D /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8A999120C93CD200E56D0D /* PreviewData.swift */; };
+		CF8A999220C93CD200E56D0D /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8A999120C93CD200E56D0D /* News.swift */; };
 		CF8A999420C93F3F00E56D0D /* PreviewDataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8A999320C93F3F00E56D0D /* PreviewDataTableViewCell.swift */; };
 		CF8A999620C976C500E56D0D /* PreviewDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8A999520C976C500E56D0D /* PreviewDataTableViewController.swift */; };
 /* End PBXBuildFile section */
@@ -30,7 +30,7 @@
 		CF05C94E20C7D98400848A59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CF05C95120C7D98400848A59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CF05C95320C7D98400848A59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CF8A999120C93CD200E56D0D /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+		CF8A999120C93CD200E56D0D /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
 		CF8A999320C93F3F00E56D0D /* PreviewDataTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDataTableViewCell.swift; sourceTree = "<group>"; };
 		CF8A999520C976C500E56D0D /* PreviewDataTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDataTableViewController.swift; sourceTree = "<group>"; };
 		F6C2A677FAEB226A85FD397C /* Pods-Factoy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Factoy.release.xcconfig"; path = "Pods/Target Support Files/Pods-Factoy/Pods-Factoy.release.xcconfig"; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 			children = (
 				CF05C94720C7D98400848A59 /* AppDelegate.swift */,
 				CF04C43920D1B7CE00AEF7F0 /* ErrorOccured.swift */,
-				CF8A999120C93CD200E56D0D /* PreviewData.swift */,
+				CF8A999120C93CD200E56D0D /* News.swift */,
 				CF05C94920C7D98400848A59 /* DataViewController.swift */,
 				CF8A999520C976C500E56D0D /* PreviewDataTableViewController.swift */,
 				CF8A999320C93F3F00E56D0D /* PreviewDataTableViewCell.swift */,
@@ -222,7 +222,7 @@
 				CF04C43A20D1B7CE00AEF7F0 /* ErrorOccured.swift in Sources */,
 				CF05C94820C7D98400848A59 /* AppDelegate.swift in Sources */,
 				CF8A999620C976C500E56D0D /* PreviewDataTableViewController.swift in Sources */,
-				CF8A999220C93CD200E56D0D /* PreviewData.swift in Sources */,
+				CF8A999220C93CD200E56D0D /* News.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

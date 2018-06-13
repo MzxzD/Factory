@@ -118,37 +118,28 @@ class PreviewDataTableViewController: UITableViewController {
                         {
                             // Saving important values
                             var Values = Articles as! [String: String]
-                            let headline = Values["title"] as! String
-                            let photo_string = Values["urlToImage"] as! String
-                            var story = Values["description"] as! String
-                            story += "\n"
-                            story += Values["url"] as! String
-                            let photoURL = URL(string: photo_string)
+                            let headline = Values["title"] as String?
+                            let photo_string = Values["urlToImage"] as String?
+                            let story = Values["description"] as String?
+                            let photoURL = URL(string: photo_string!)
                             
                             Alamofire.request(photoURL!)
-                                .downloadProgress(closure:
-                                    {
-                                        (progress) in
-                                        DispatchQueue.main.async
-                                            {
-                                                self.loadingIndicator.stopAnimating()
-                                                self.tableView.reloadData()
-                                            }
-                                })
                                 .responseImage
                                 {
                                     response in
-                                    if let image = response.result.value
-                                    {
-                                        // Saving Values in preview Object
-                                        guard let previewx = Preview(headline: headline, photo: image, story: story)
-                                            else {
-                                                //fatalError("Unable to instantianite preview")
-                                                errorOccured()
-                                                return
+                                        if let image = response.result.value
+                                        {
+                                            // Saving Values in preview Object
+                                            guard let previewx = Preview(headline: headline!, photo: image, story: story!)
+                                                else {
+                                                    //fatalError("Unable to instantianite preview")
+                                                    errorOccured()
+                                                    return
+                                                    }
+                                            self.previewData += [previewx]
                                         }
-                                        self.previewData += [previewx]
-                                    }
+                                        self.loadingIndicator.stopAnimating()
+                                        self.tableView.reloadData()
                                 }
                         }
                     
@@ -156,8 +147,6 @@ class PreviewDataTableViewController: UITableViewController {
                         errorOccured(value: error)
                 }
             }
-        
-        
     }
     
     

@@ -20,23 +20,17 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let preview = preview {
+        if let preview = preview
+        {
             navigationItem.title = preview.headline
             headlineLabel.text = preview.headline
             photoImageView.image = preview.photo
             storyText.text = preview.story
             
-        }else
+        } else
         {
             errorOccured()
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
