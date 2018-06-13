@@ -89,44 +89,21 @@ class PreviewDataTableViewController: UITableViewController {
         let selectedPreview = previewData[indexPath.row]
          previewDetailViewController.preview = selectedPreview 
     }
- 
-    
-    
-    
-    
-    // MARK: private methods
-    
-    private func loadSamplePreview() {
-        
-        let photo1 = UIImage(named: "Image1")
-        let photo2 = UIImage(named: "Image2")
-        let photo3 = UIImage(named: "Image3")
-        
-        guard let preview1 = Preview(headline: "Beautiful park preview", photo: photo1, story:" Join us in opening the Celebration in the Oaks season. The parties are always a blast and you get to view all the traditions youve come to know and expect as well as see what's new before everyone else! Click the boxes below to find out more about the parties, entertainment, cuisine, and to buy tickets.*Tickets for Celebration in the Oaks and Preview Parties are on sale now! Click here if you already know which party tickets you wish to purchase.** ") else {
-            fatalError("Unable to instantianite preview1")
-            
-           
-        }
-        guard let preview2 = Preview(headline: "Best Bridge in Croatia", photo: photo2, story:" Join us in opening the Celebration in the Oaks season. The parties are always a blast and you get to view all the traditions youve come to know and expect as well as see what's new before everyone else! Click the boxes below to find out more about the parties, entertainment, cuisine, and to buy tickets.*Tickets for Celebration in the Oaks and Preview Parties are on sale now! Click here if you already know which party tickets you wish to purchase.** ") else {
-            fatalError("Unable to instantianite preview1")
-            
-            
-        }
-        
-        guard let preview3 = Preview(headline: "Historical Houses are comming back!", photo: photo3, story:" Join us in opening the Celebration in the Oaks season. The parties are always a blast and you get to view all the traditions youve come to know and expect as well as see what's new before everyone else! Click the boxes below to find out more about the parties, entertainment, cuisine, and to buy tickets.*Tickets for Celebration in the Oaks and Preview Parties are on sale now! Click here if you already know which party tickets you wish to purchase.** ") else {
-            fatalError("Unable to instantianite preview1")
-            
-            
-        }
-        
-         previewData += [preview1, preview2, preview3]
-    }
 
     // MARK: Function for loading Data from URL
     private func LoadPreview() {
-
+        
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         // Validating URL response
-        Alamofire.request(url).validate().responseJSON { response in
+        Alamofire.request(url)
+            .validate()
+
+            
+            
+            
+            
+            
+            .responseJSON { response in
             
             switch response.result {
                 
@@ -149,10 +126,15 @@ class PreviewDataTableViewController: UITableViewController {
 
                     let photoURL = URL(string: photo_string)
                     
-                    Alamofire.request(photoURL!).responseImage { response in
+                    Alamofire.request(photoURL!)
+                        .downloadProgress(queue: utilityQueue, closure: { (progress) in
+                            print("Downloaded: \(progress.fractionCompleted)")
+                        })
+                        
+                        .responseImage { response in
                         
                         if let image = response.result.value {
-                            print("image downloaded: \(image)")
+                         
                             // Saving Values in preview Object
                             guard let previewx = Preview(headline: headline, photo: image, story: story)
                                 else {

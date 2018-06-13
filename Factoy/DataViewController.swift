@@ -19,9 +19,7 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
+
         if let preview = preview {
             navigationItem.title = preview.headline
             headlineLabel.text = preview.headline
@@ -29,11 +27,6 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
             storyText.text = preview.story
             
         }
-        
-         
-        
-        
-        
     }
 
     override func didReceiveMemoryWarning() {
