@@ -18,26 +18,15 @@ class PreviewDataTableViewController: UITableViewController {
     
     // MARK: Properties
     
-    var PreviewData = [Preview]()
+    var previewData = [Preview]()
     var picture: UIImage?
  
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        //Load sample pewview
-        
-        if LoadPreview() {}
-        else {
-            loadSamplePreview()
-        }
+        //Load  peview
+        LoadPreview()
 
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,7 +42,7 @@ class PreviewDataTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return PreviewData.count
+        return previewData.count
     }
 
     
@@ -69,7 +58,7 @@ class PreviewDataTableViewController: UITableViewController {
             
         }
         
-        let preview = PreviewData[indexPath.row]
+        let preview = previewData[indexPath.row]
         
         cell.headlineLabel.text = preview.headline
         cell.photoImageView.image = preview.photo
@@ -78,42 +67,6 @@ class PreviewDataTableViewController: UITableViewController {
         return cell
     }
     
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     
     // MARK: - Navigation
 
@@ -126,14 +79,14 @@ class PreviewDataTableViewController: UITableViewController {
         }
         
         guard let selectedPreviewCell = sender as? PreviewDataTableViewCell else {
-            fatalError("Unexpeced sender: \(sender)")
+            fatalError("Unexpeced sender: \(sender!)")
         }
         
         guard let indexPath = tableView.indexPath(for: selectedPreviewCell) else {
             fatalError("The selected cellis not being displayed by the table")
         }
         
-        let selectedPreview = PreviewData[indexPath.row]
+        let selectedPreview = previewData[indexPath.row]
          previewDetailViewController.preview = selectedPreview 
     }
  
@@ -166,14 +119,12 @@ class PreviewDataTableViewController: UITableViewController {
             
         }
         
-         PreviewData += [preview1, preview2, preview3]
+         previewData += [preview1, preview2, preview3]
     }
 
     // MARK: Function for loading Data from URL
-    private func LoadPreview() -> Bool {
-        
-        var bool = true
-        
+    private func LoadPreview() {
+
         // Validating URL response
         Alamofire.request(url).validate().responseJSON { response in
             
@@ -181,7 +132,7 @@ class PreviewDataTableViewController: UITableViewController {
                 
             case .success:
                 print("Validation Successful")
-                bool = true
+               
                 
                 // Parsing data
                 let JSON = response.result.value as! [String: Any]
@@ -195,23 +146,10 @@ class PreviewDataTableViewController: UITableViewController {
                     var story = Values["description"] as! String
                     story += "\n"
                     story += Values["url"] as! String
-              /*      var photo = UIImage(named: "image1")
-                    
-                    // Downloading image
-                    Alamofire.download(photo_string).responseData(completionHandler: { (response) in
-                        if let data = response.result.value{
-                            photo = UIImage(data: data)
-                        }
-                        
-                    })*/
-                    var photoURL = URL(string: photo_string)
+
+                    let photoURL = URL(string: photo_string)
                     
                     Alamofire.request(photoURL!).responseImage { response in
-               //         debugPrint(response)
-                        
-               //         print(response.request)
-                        print(response.response)
-            //            debugPrint(response.result)
                         
                         if let image = response.result.value {
                             print("image downloaded: \(image)")
@@ -220,36 +158,17 @@ class PreviewDataTableViewController: UITableViewController {
                                 else {
                                     fatalError("Unable to instantianite preview")
                             }
-                            self.PreviewData += [previewx]
+                            self.previewData += [previewx]
                             DispatchQueue.main.async{
                                 self.tableView.reloadData()
                             }
-                            
-                            
                         }
                     }
-                    
-                    
-                    
-
-                    
-
-           //         print(previewx.headline)
-             //       print(previewx.story)
-                    
-                    //Pusing into Object array
-
                 }
-                
-               
-                
+
             case .failure(let error):
                 print(error)
-                bool = false
             }
         }
-        
-        return bool
     }
-
 }
