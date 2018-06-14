@@ -10,9 +10,11 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
+
 class PreviewDataTableViewController: UITableViewController {
     // MARK: Properties
-   
+    
+    var contentLenght = String()
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     var previewData = [Preview]()
     
@@ -22,6 +24,11 @@ class PreviewDataTableViewController: UITableViewController {
         //Load  peview
         createLoadingIndicator()
         LoadPreview()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(reloadPreview), userInfo: nil, repeats: true)
+        print(timer)
     }
 
     // MARK: - Table view data source
@@ -102,15 +109,22 @@ class PreviewDataTableViewController: UITableViewController {
         
         // Validating URL response
         let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
-        Alamofire.request(url)
+        let request = Alamofire.request(url)
             .validate()
             .responseJSON
             {
                 response in
+                
                 switch response.result
                 {
                     case .success:
                         print("Validation Successful")
+                         if let contentLenght = response.response?.allHeaderFields["Content-Length"] as? String {
+                            print(contentLenght)
+                            self.contentLenght = contentLenght
+                            print(self.contentLenght)
+                        }
+                        
                         // Parsing data
                         let JSON = response.result.value as! [String: Any]
                         let JSONArticles = JSON["articles"] as! NSArray
@@ -118,28 +132,39 @@ class PreviewDataTableViewController: UITableViewController {
                         {
                             // Saving important values
                             var Values = Articles as! [String: String]
-                            let headline = Values["title"] as String?
-                            let photo_string = Values["urlToImage"] as String?
-                            let story = Values["description"] as String?
-                            let photoURL = URL(string: photo_string!)
+                            let headline = (Values["title"] as String?) ?? ""
+                            let photo_string = (Values["urlToImage"] as String?) ?? ""
+                            let story = (Values["description"] as String?) ?? ""
+                            let photoURL = URL(string: photo_string)
                             
                             Alamofire.request(photoURL!)
+                                .validate()
                                 .responseImage
                                 {
                                     response in
-                                        if let image = response.result.value
-                                        {
-                                            // Saving Values in preview Object
-                                            guard let previewx = Preview(headline: headline!, photo: image, story: story!)
-                                                else {
-                                                    //fatalError("Unable to instantianite preview")
-                                                    errorOccured()
-                                                    return
-                                                    }
-                                            self.previewData += [previewx]
-                                        }
-                                        self.loadingIndicator.stopAnimating()
-                                        self.tableView.reloadData()
+                                    switch response.result
+                                    {
+                                        
+                                        case .success:
+                                            if let image = response.result.value
+                                            {
+                                                // Saving Values in preview Object
+                                                guard let previewx = Preview(headline: headline, photo: image, story: story)
+                                                    else {
+                                                        //fatalError("Unable to instantianite preview")
+                                                        errorOccured()
+                                                        return
+                                                }
+                                                self.previewData += [previewx]
+                                            }
+                                            self.loadingIndicator.stopAnimating()
+                                            self.tableView.reloadData()
+                                        
+                                        
+                                        case .failure(let error):
+                                            errorOccured(value: error)
+                                        
+                                    }
                                 }
                         }
                     
@@ -147,9 +172,34 @@ class PreviewDataTableViewController: UITableViewController {
                         errorOccured(value: error)
                 }
             }
+        print (request)
     }
     
-    
+   @objc func reloadPreview()
+   {
+        let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
+        Alamofire.request(url)
+            .responseJSON
+            {
+                response in
+                    if let contentLenght = response.response?.allHeaderFields["Content-Length"] as? String {
+                        if contentLenght != self.contentLenght
+                        {
+                            print("Change has appeared... Reloading...")
+                            self.createLoadingIndicator()
+                            self.LoadPreview()
+                            return
+                        } else
+                        {   print("Change Has not occured...")
+                            return }
+                } else
+                    {
+                        print("Error... Trying again")
+                        self.reloadPreview()
+                        return
+                    }
+            }
+    }
     
 }
 
