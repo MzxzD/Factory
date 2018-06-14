@@ -27,7 +27,7 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(reloadPreview), userInfo: nil, repeats: true)
+        let timer = Timer.scheduledTimer(timeInterval: 5*60, target: self, selector: #selector(reloadPreview), userInfo: nil, repeats: true)
         print(timer)
     }
 
@@ -186,6 +186,7 @@ class PreviewDataTableViewController: UITableViewController {
                         if contentLenght != self.contentLenght
                         {
                             print("Change has appeared... Reloading...")
+                            self.previewData.removeAll()
                             self.createLoadingIndicator()
                             self.LoadPreview()
                             return
