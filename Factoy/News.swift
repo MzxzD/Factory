@@ -13,12 +13,12 @@ class Preview: NSObject {
     // MARK: properties
     
     var headline: String
-    var photo: UIImage?
+    var photo_url: String
     var story: String
     
     
     // MARK: Initalization
-    init?(headline: String, photo: UIImage?, story: String){
+    init?(headline: String, photo_url: String, story: String){
         
         // Headline must not be empty
         guard !headline.isEmpty else {
@@ -27,7 +27,7 @@ class Preview: NSObject {
         
         // Initialize stored properties
         self.headline = headline
-        self.photo = photo
+        self.photo_url = photo_url
         self.story = story
         
     }

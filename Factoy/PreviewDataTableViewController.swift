@@ -12,12 +12,21 @@ import AlamofireImage
 
 
 class PreviewDataTableViewController: UITableViewController {
-    // MARK: Properties
     
-    var contentLenght = String()
+    // MARK: Properties
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     var previewData = [Preview]()
+    var time = Date()
     
+    
+    lazy var refresher: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = UIColor.red
+        refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
+        return refreshControl
+    }()
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,8 +36,16 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let timer = Timer.scheduledTimer(timeInterval: 5*60, target: self, selector: #selector(reloadPreview), userInfo: nil, repeats: true)
-        print(timer)
+        let date = Date()
+        print(date)
+        let timeToCompare = time.addingTimeInterval(5*60)
+        print(timeToCompare)
+        if timeToCompare > date {
+            return
+        } else {
+            print("5 minutes has passed, time to reload data! :)")
+            LoadPreview()
+        }
     }
 
     // MARK: - Table view data source
@@ -56,9 +73,27 @@ class PreviewDataTableViewController: UITableViewController {
         let preview = previewData[indexPath.row]
         
         cell.headlineLabel.text = preview.headline
-        cell.photoImageView.image = preview.photo
         
-        
+        // Downloading image from saved link
+        Alamofire.request(URL (string: preview.photo_url)!)
+            .validate()
+            .responseImage
+            {
+                response in
+                switch response.result
+                {
+                    
+                case .success:
+                    if let image = response.result.value
+                    {
+                        cell.photoImageView.image = image
+                    }
+
+                case .failure(let error):
+                    errorOccured(value: error)
+                }
+            }
+
         return cell
     }
     
@@ -104,12 +139,18 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     // MARK: Function for loading Data from URL
-    private func LoadPreview()
+    @objc func LoadPreview()
     {
+        if (!previewData.isEmpty)
+        {
+            previewData.removeAll()
+        }
+        // Getting a "timestamp"
+        let time_now = Date()
         
         // Validating URL response
         let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
-        let request = Alamofire.request(url)
+        Alamofire.request(url)
             .validate()
             .responseJSON
             {
@@ -119,11 +160,6 @@ class PreviewDataTableViewController: UITableViewController {
                 {
                     case .success:
                         print("Validation Successful")
-                         if let contentLenght = response.response?.allHeaderFields["Content-Length"] as? String {
-                            print(contentLenght)
-                            self.contentLenght = contentLenght
-                            print(self.contentLenght)
-                        }
                         
                         // Parsing data
                         let JSON = response.result.value as! [String: Any]
@@ -133,74 +169,31 @@ class PreviewDataTableViewController: UITableViewController {
                             // Saving important values
                             var Values = Articles as! [String: String]
                             let headline = (Values["title"] as String?) ?? ""
-                            let photo_string = (Values["urlToImage"] as String?) ?? ""
+                            let photo_url = (Values["urlToImage"] as String?) ?? ""
                             let story = (Values["description"] as String?) ?? ""
-                            let photoURL = URL(string: photo_string)
+
+                            guard let preview = Preview(headline: headline, photo_url: photo_url, story: story) else
+                            {
+                                errorOccured()
+                                return
+                            }
+                            self.previewData += [preview]
                             
-                            Alamofire.request(photoURL!)
-                                .validate()
-                                .responseImage
-                                {
-                                    response in
-                                    switch response.result
-                                    {
-                                        
-                                        case .success:
-                                            if let image = response.result.value
-                                            {
-                                                // Saving Values in preview Object
-                                                guard let previewx = Preview(headline: headline, photo: image, story: story)
-                                                    else {
-                                                        //fatalError("Unable to instantianite preview")
-                                                        errorOccured()
-                                                        return
-                                                }
-                                                self.previewData += [previewx]
-                                            }
-                                            self.loadingIndicator.stopAnimating()
-                                            self.tableView.reloadData()
-                                        
-                                        
-                                        case .failure(let error):
-                                            errorOccured(value: error)
-                                        
-                                    }
-                                }
                         }
                     
                     case .failure(let error):
                         errorOccured(value: error)
                 }
+                self.time = time_now
+                print("Time view is created: \(self.time)")
+                self.refresher.endRefreshing()
+                self.tableView.reloadData()
+                self.loadingIndicator.stopAnimating()
+                
             }
-        print (request)
     }
     
-   @objc func reloadPreview()
-   {
-        let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
-        Alamofire.request(url)
-            .responseJSON
-            {
-                response in
-                    if let contentLenght = response.response?.allHeaderFields["Content-Length"] as? String {
-                        if contentLenght != self.contentLenght
-                        {
-                            print("Change has appeared... Reloading...")
-                            self.previewData.removeAll()
-                            self.createLoadingIndicator()
-                            self.LoadPreview()
-                            return
-                        } else
-                        {   print("Change Has not occured...")
-                            return }
-                } else
-                    {
-                        print("Error... Trying again")
-                        self.reloadPreview()
-                        return
-                    }
-            }
-    }
+
     
 }
 
