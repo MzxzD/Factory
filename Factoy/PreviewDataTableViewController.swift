@@ -10,18 +10,42 @@ import UIKit
 import Alamofire
 import AlamofireImage
 
+
 class PreviewDataTableViewController: UITableViewController {
+    
     // MARK: Properties
-   
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     var previewData = [Preview]()
+    var time = Date()
     
+    
+    lazy var refresher: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = UIColor.red
+        refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
+        return refreshControl
+    }()
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
         //Load  peview
         createLoadingIndicator()
         LoadPreview()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let date = Date()
+        print(date)
+        let timeToCompare = time.addingTimeInterval(5*60)
+        print(timeToCompare)
+        if timeToCompare > date {
+            return
+        } else {
+            print("5 minutes has passed, time to reload data! :)")
+            LoadPreview()
+        }
     }
 
     // MARK: - Table view data source
@@ -49,9 +73,27 @@ class PreviewDataTableViewController: UITableViewController {
         let preview = previewData[indexPath.row]
         
         cell.headlineLabel.text = preview.headline
-        cell.photoImageView.image = preview.photo
         
-        
+        // Downloading image from saved link
+        Alamofire.request(URL (string: preview.photo_url)!)
+            .validate()
+            .responseImage
+            {
+                response in
+                switch response.result
+                {
+                    
+                case .success:
+                    if let image = response.result.value
+                    {
+                        cell.photoImageView.image = image
+                    }
+
+                case .failure(let error):
+                    errorOccured(value: error)
+                }
+            }
+
         return cell
     }
     
@@ -97,8 +139,14 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     // MARK: Function for loading Data from URL
-    private func LoadPreview()
+    @objc func LoadPreview()
     {
+        if (!previewData.isEmpty)
+        {
+            previewData.removeAll()
+        }
+        // Getting a "timestamp"
+        let time_now = Date()
         
         // Validating URL response
         let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
@@ -107,10 +155,12 @@ class PreviewDataTableViewController: UITableViewController {
             .responseJSON
             {
                 response in
+                
                 switch response.result
                 {
                     case .success:
                         print("Validation Successful")
+                        
                         // Parsing data
                         let JSON = response.result.value as! [String: Any]
                         let JSONArticles = JSON["articles"] as! NSArray
@@ -118,49 +168,33 @@ class PreviewDataTableViewController: UITableViewController {
                         {
                             // Saving important values
                             var Values = Articles as! [String: String]
-                            let headline = Values["title"] as! String
-                            let photo_string = Values["urlToImage"] as! String
-                            var story = Values["description"] as! String
-                            story += "\n"
-                            story += Values["url"] as! String
-                            let photoURL = URL(string: photo_string)
+                            let headline = (Values["title"] as String?) ?? ""
+                            let photo_url = (Values["urlToImage"] as String?) ?? ""
+                            let story = (Values["description"] as String?) ?? ""
+
+                            guard let preview = Preview(headline: headline, photo_url: photo_url, story: story) else
+                            {
+                                errorOccured()
+                                return
+                            }
+                            self.previewData += [preview]
                             
-                            Alamofire.request(photoURL!)
-                                .downloadProgress(closure:
-                                    {
-                                        (progress) in
-                                        DispatchQueue.main.async
-                                            {
-                                                self.loadingIndicator.stopAnimating()
-                                                self.tableView.reloadData()
-                                            }
-                                })
-                                .responseImage
-                                {
-                                    response in
-                                    if let image = response.result.value
-                                    {
-                                        // Saving Values in preview Object
-                                        guard let previewx = Preview(headline: headline, photo: image, story: story)
-                                            else {
-                                                //fatalError("Unable to instantianite preview")
-                                                errorOccured()
-                                                return
-                                        }
-                                        self.previewData += [previewx]
-                                    }
-                                }
                         }
                     
                     case .failure(let error):
                         errorOccured(value: error)
                 }
+                self.time = time_now
+                print("Time view is created: \(self.time)")
+                
+                self.tableView.reloadData()
+                self.refresher.endRefreshing()
+                self.loadingIndicator.stopAnimating()
+                
             }
-        
-        
     }
     
-    
+
     
 }
 

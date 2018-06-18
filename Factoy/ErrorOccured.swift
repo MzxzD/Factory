@@ -6,7 +6,6 @@
 //  Copyright © 2018 Mateo Došlić. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 // MARK: Error Function

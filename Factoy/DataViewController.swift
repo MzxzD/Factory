@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+import AlamofireImage
 
 class DataViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate {
     
@@ -20,23 +22,36 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let preview = preview {
+        if let preview = preview
+        {
             navigationItem.title = preview.headline
             headlineLabel.text = preview.headline
-            photoImageView.image = preview.photo
+            // photoImageView.image = preview.photo
             storyText.text = preview.story
             
-        }else
+            Alamofire.request(URL (string: preview.photo_url)!)
+                .validate()
+                .responseImage
+                {
+                    response in
+                    switch response.result
+                    {
+                        
+                    case .success:
+                        if let image = response.result.value
+                        {
+                            self.photoImageView.image = image
+                        }
+                        
+                    case .failure(let error):
+                        errorOccured(value: error)
+                    }
+            }
+            
+        } else
         {
             errorOccured()
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
