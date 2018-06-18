@@ -8,7 +8,7 @@ struct NewsViewData {
     let story: String
 }
 
-protocol NewsView: NSObjectProtocol {
+protocol NewsView {
     
     func startLoading()
     func fininshLoading()
@@ -19,7 +19,7 @@ protocol NewsView: NSObjectProtocol {
 class NewsPresenter {
     
     fileprivate let newsService:NewsService
-    weak fileprivate var newsView:NewsView?
+    fileprivate var newsView:NewsView?
     
     init(newsService:NewsService) {
         self.newsService = newsService

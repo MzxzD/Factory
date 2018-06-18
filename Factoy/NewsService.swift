@@ -5,10 +5,11 @@ import AlamofireImage
 
 class NewsService {
     
-    func getNews(_ callBack:@escaping([Preview]) -> Void){
+    func getNews(_ callBack:@escaping([News]) -> Void){
 
         // Validating URL response
         let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
+        var newsArray = [News]()
         Alamofire.request(url)
             .validate()
             .responseJSON
@@ -31,20 +32,17 @@ class NewsService {
                         let photo_url = (Values["urlToImage"] as String?) ?? ""
                         let story = (Values["description"] as String?) ?? ""
                         
-                        guard let preview = Preview(headline: headline, photo_url: photo_url, story: story) else
-                        {
-                            errorOccured()
-                            return
-                        }
-                        print(preview)
-                        print([preview])
-                        callBack([preview])
+                        let news = News(headline: headline, photo_url: photo_url, story: story)
+                        newsArray += [news]
+                        
                     }
                     
                 case .failure(let error):
                     errorOccured(value: error)
                 }
+                callBack(newsArray)
             }
+        
     }
     
 }

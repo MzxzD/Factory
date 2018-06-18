@@ -14,7 +14,7 @@ import AlamofireImage
 class PreviewDataTableViewController: UITableViewController {
     /*
     // MARK: Properties
-    let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+    
     var previewData = [Preview]()
     var time = Date()
     
@@ -27,15 +27,14 @@ class PreviewDataTableViewController: UITableViewController {
     }()
     */
     
+    let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     fileprivate let newsPresenter = NewsPresenter(newsService: NewsService())
     fileprivate var newsToDisplay = [NewsViewData]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //tableView?.dataSource = self
         
-        
-        // newsPresenter.attachView(self)
+        newsPresenter.attachView(self)
         newsPresenter.getNews()
   /*
         //Load  peview
@@ -121,47 +120,35 @@ class PreviewDataTableViewController: UITableViewController {
             }
         
              let selectedNews = newsToDisplay[indexPath.row]
-                newsDetailViewController.headlineLabel.text = selectedNews.headline
-                newsDetailViewController.storyText.text = selectedNews.story
-                newsDetailViewController.photoImage_url = selectedNews.image_url
+                newsDetailViewController.newsToDisplay = selectedNews
     }
-    
-    
 
-    
-    
- /*
-    // MARK: Function for Activity Indicator
-    func createLoadingIndicator()
-    {
+
+}
+
+extension PreviewDataTableViewController: NewsView {
+    func startLoading() {
         loadingIndicator.center = view.center
         loadingIndicator.color = UIColor.blue
         loadingIndicator.startAnimating()
         view.addSubview(loadingIndicator)
     }
     
-*/
-
-}
-
-extension PreviewDataTableViewController: NewsView {
-    func startLoading() {
-       // activityIndicator?.startAnimating()
+    func fininshLoading() {
+        loadingIndicator.stopAnimating()
     }
     
-    func finishLoading() {
-      //  activityIndicator?.stopAnimating()
-    }
-    
-    func setUsers(_ news: [NewsViewData]) {
+    func setNews(_ news: [NewsViewData]) {
         newsToDisplay = news
-
+        tableView?.isHidden = false
         tableView?.reloadData()
     }
     
-    func setEmptyUsers() {
-
+    func setEmptyNews() {
+        tableView.isHidden = true
     }
+    
+
     
 }
 
