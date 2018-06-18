@@ -36,7 +36,8 @@ class NewsService {
                             errorOccured()
                             return
                         }
-                        
+                        print(preview)
+                        print([preview])
                         callBack([preview])
                     }
                     
@@ -45,34 +46,5 @@ class NewsService {
                 }
             }
     }
-    
-    
-    func getNewsImage(/*_ callBack:@escaping() -> Void*/){
-        
-        Alamofire.request(URL (string: "")!)
-            .validate()
-            .responseImage
-            {
-                response in
-                switch response.result
-                {
-                    
-                case .success:
-                    if let _ = response.result.value
-                    {
-                       // self.photoImageView.image = image
-                    }
-                    
-                case .failure(let error):
-                    errorOccured(value: error)
-                }
-        }
-        
-    }
-    
-    
-    
-    
-    
     
 }

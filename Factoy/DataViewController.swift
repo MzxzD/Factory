@@ -16,42 +16,22 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
     @IBOutlet weak var headlineLabel: UILabel!
     @IBOutlet weak var storyText: UITextView!
     
-    var preview: Preview?
-    
+    var photoImage_url = String()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if let preview = preview
-        {
-            navigationItem.title = preview.headline
-            headlineLabel.text = preview.headline
-            // photoImageView.image = preview.photo
-            storyText.text = preview.story
-            
-            Alamofire.request(URL (string: preview.photo_url)!)
-                .validate()
-                .responseImage
+        
+            Alamofire.request(URL (string: photoImage_url)!).responseImage
                 {
                     response in
-                    switch response.result
-                    {
-                        
-                    case .success:
                         if let image = response.result.value
                         {
                             self.photoImageView.image = image
                         }
-                        
-                    case .failure(let error):
-                        errorOccured(value: error)
-                    }
-            }
-            
-        } else
-        {
-            errorOccured()
-        }
+                }
     }
+            
+    
+    
 }
 

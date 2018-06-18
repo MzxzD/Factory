@@ -12,31 +12,39 @@ import AlamofireImage
 
 
 class PreviewDataTableViewController: UITableViewController {
-    
+    /*
     // MARK: Properties
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
     var previewData = [Preview]()
     var time = Date()
     
-    
+   
     lazy var refresher: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.tintColor = UIColor.red
         refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
         return refreshControl
     }()
+    */
     
-
+    fileprivate let newsPresenter = NewsPresenter(newsService: NewsService())
+    fileprivate var newsToDisplay = [NewsViewData]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        //tableView?.dataSource = self
         
+        
+        // newsPresenter.attachView(self)
+        newsPresenter.getNews()
+  /*
         //Load  peview
         createLoadingIndicator()
-        LoadPreview()
+        LoadPreview() */
     }
-    
+ 
     override func viewDidAppear(_ animated: Bool) {
-        let date = Date()
+    /*    let date = Date()
         print(date)
         let timeToCompare = time.addingTimeInterval(5*60)
         print(timeToCompare)
@@ -45,7 +53,7 @@ class PreviewDataTableViewController: UITableViewController {
         } else {
             print("5 minutes has passed, time to reload data! :)")
             LoadPreview()
-        }
+        }*/
     }
 
     // MARK: - Table view data source
@@ -54,7 +62,7 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return previewData.count
+        return newsToDisplay.count
     }
     
     
@@ -70,31 +78,18 @@ class PreviewDataTableViewController: UITableViewController {
             return UITableViewCell()
            
         }
-        let preview = previewData[indexPath.row]
+        let newsViewData = newsToDisplay[indexPath.row]
         
-        cell.headlineLabel.text = preview.headline
-        
-        // Downloading image from saved link
-        Alamofire.request(URL (string: preview.photo_url)!)
-            .validate()
-            .responseImage
+        cell.headlineLabel.text = newsViewData.headline
+        Alamofire.request(URL (string: newsViewData.image_url)!).responseImage
             {
                 response in
-                switch response.result
-                {
-                    
-                case .success:
                     if let image = response.result.value
                     {
                         cell.photoImageView.image = image
                     }
-
-                case .failure(let error):
-                    errorOccured(value: error)
-                }
             }
-
-        return cell
+        return  cell
     }
     
     
@@ -103,14 +98,14 @@ class PreviewDataTableViewController: UITableViewController {
     {
             super.prepare(for: segue, sender: sender)
         
-            guard let previewDetailViewController = segue.destination as? DataViewController else
+            guard let newsDetailViewController = segue.destination as? DataViewController else
             {
                 //fatalError("Unexpected destination \(segue.destination)")
                 errorOccured(value: "Unexpected destination!")
                 return
             }
         
-            guard let selectedPreviewCell = sender as? PreviewDataTableViewCell else
+            guard let selectedNewsCell = sender as? PreviewDataTableViewCell else
             {
                 //fatalError("Unexpeced sender: \(sender!)")
                 errorOccured(value: "Unexpeced sender!")
@@ -118,17 +113,24 @@ class PreviewDataTableViewController: UITableViewController {
             
             }
         
-            guard let indexPath = tableView.indexPath(for: selectedPreviewCell) else
+            guard let indexPath = tableView.indexPath(for: selectedNewsCell) else
             {
                 // fatalError("The selected cellis not being displayed by the table")
                 errorOccured(value: "The selected cellis not being displayed by the table")
                 return
             }
         
-            let selectedPreview = previewData[indexPath.row]
-            previewDetailViewController.preview = selectedPreview
+             let selectedNews = newsToDisplay[indexPath.row]
+                newsDetailViewController.headlineLabel.text = selectedNews.headline
+                newsDetailViewController.storyText.text = selectedNews.story
+                newsDetailViewController.photoImage_url = selectedNews.image_url
     }
     
+    
+
+    
+    
+ /*
     // MARK: Function for Activity Indicator
     func createLoadingIndicator()
     {
@@ -138,63 +140,29 @@ class PreviewDataTableViewController: UITableViewController {
         view.addSubview(loadingIndicator)
     }
     
-    // MARK: Function for loading Data from URL
-    @objc func LoadPreview()
-    {
-        if (!previewData.isEmpty)
-        {
-            previewData.removeAll()
-        }
-        // Getting a "timestamp"
-        let time_now = Date()
-        
-        // Validating URL response
-        let url = "https://newsapi.org/v1/articles?apiKey=6946d0c07a1c4555a4186bfcade76398&sortBy=top&source=bbc-news"
-        Alamofire.request(url)
-            .validate()
-            .responseJSON
-            {
-                response in
-                
-                switch response.result
-                {
-                    case .success:
-                        print("Validation Successful")
-                        
-                        // Parsing data
-                        let JSON = response.result.value as! [String: Any]
-                        let JSONArticles = JSON["articles"] as! NSArray
-                        for Articles in JSONArticles
-                        {
-                            // Saving important values
-                            var Values = Articles as! [String: String]
-                            let headline = (Values["title"] as String?) ?? ""
-                            let photo_url = (Values["urlToImage"] as String?) ?? ""
-                            let story = (Values["description"] as String?) ?? ""
+*/
 
-                            guard let preview = Preview(headline: headline, photo_url: photo_url, story: story) else
-                            {
-                                errorOccured()
-                                return
-                            }
-                            self.previewData += [preview]
-                            
-                        }
-                    
-                    case .failure(let error):
-                        errorOccured(value: error)
-                }
-                self.time = time_now
-                print("Time view is created: \(self.time)")
-                
-                self.tableView.reloadData()
-                self.refresher.endRefreshing()
-                self.loadingIndicator.stopAnimating()
-                
-            }
+}
+
+extension PreviewDataTableViewController: NewsView {
+    func startLoading() {
+       // activityIndicator?.startAnimating()
     }
     
+    func finishLoading() {
+      //  activityIndicator?.stopAnimating()
+    }
+    
+    func setUsers(_ news: [NewsViewData]) {
+        newsToDisplay = news
 
+        tableView?.reloadData()
+    }
+    
+    func setEmptyUsers() {
+
+    }
     
 }
+
 

@@ -4,7 +4,7 @@ import Foundation
 struct NewsViewData {
     
     let headline: String
- // let image: UIImage
+    let image_url: String
     let story: String
 }
 
@@ -41,7 +41,7 @@ class NewsPresenter {
                 self?.newsView?.setEmptyNews()
             }else{
                 let mappedNews = news.map{
-                    return NewsViewData(headline: "\($0.headline)", story: "\($0.story)")
+                    return NewsViewData(headline: "\($0.headline)", image_url: "\($0.photo_url)", story: "\($0.story)")
                 }
                 self?.newsView?.setNews(mappedNews)
             }
