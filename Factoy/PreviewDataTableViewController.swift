@@ -15,20 +15,6 @@ class PreviewDataTableViewController: UITableViewController {
 <<<<<<< HEAD
     
     // MARK: Properties
-    let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
-    var previewData = [Preview]()
-    var time = Date()
-    
-    
-    lazy var refresher: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.tintColor = UIColor.red
-        refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
-        return refreshControl
-    }()
-=======
-    /*
-    // MARK: Properties
     
 
     */
@@ -49,19 +35,6 @@ class PreviewDataTableViewController: UITableViewController {
  
     override func viewDidAppear(_ animated: Bool) {
         newsPresenter.checkTimer(time: Date())
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        let date = Date()
-        print(date)
-        let timeToCompare = time.addingTimeInterval(5*60)
-        print(timeToCompare)
-        if timeToCompare > date {
-            return
-        } else {
-            print("5 minutes has passed, time to reload data! :)")
-            LoadPreview()
-        }
     }
 
     // MARK: - Table view data source
@@ -243,7 +216,6 @@ extension PreviewDataTableViewController: NewsView {
         errorOccured(value: "No news has been loaded :(")
     }
     
->>>>>>> Experimental
     
 }
 
