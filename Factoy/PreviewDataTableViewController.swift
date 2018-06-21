@@ -12,6 +12,7 @@ import AlamofireImage
 
 
 class PreviewDataTableViewController: UITableViewController {
+<<<<<<< HEAD
     
     // MARK: Properties
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
@@ -25,14 +26,29 @@ class PreviewDataTableViewController: UITableViewController {
         refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
         return refreshControl
     }()
+=======
+    /*
+    // MARK: Properties
+    
+
+    */
+    
+    let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+    fileprivate let newsPresenter = NewsPresenter(newsService: NewsService())
+    fileprivate var newsToDisplay = [NewsViewData]()
+>>>>>>> Experimental
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //Load  peview
-        createLoadingIndicator()
-        LoadPreview()
+        newsPresenter.attachView(self)
+        newsPresenter.getNews()
+
+    }
+ 
+    override func viewDidAppear(_ animated: Bool) {
+        newsPresenter.checkTimer(time: Date())
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -54,9 +70,8 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return previewData.count
+        return newsToDisplay.count
     }
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
@@ -70,6 +85,7 @@ class PreviewDataTableViewController: UITableViewController {
             return UITableViewCell()
            
         }
+<<<<<<< HEAD
         let preview = previewData[indexPath.row]
         
         cell.headlineLabel.text = preview.headline
@@ -84,10 +100,19 @@ class PreviewDataTableViewController: UITableViewController {
                 {
                     
                 case .success:
+=======
+        let newsViewData = newsToDisplay[indexPath.row]
+        
+        cell.headlineLabel.text = newsViewData.headline
+        Alamofire.request(URL (string: newsViewData.image_url)!).responseImage
+            {
+                response in
+>>>>>>> Experimental
                     if let image = response.result.value
                     {
                         cell.photoImageView.image = image
                     }
+<<<<<<< HEAD
 
                 case .failure(let error):
                     errorOccured(value: error)
@@ -95,6 +120,10 @@ class PreviewDataTableViewController: UITableViewController {
             }
 
         return cell
+=======
+            }
+        return  cell
+>>>>>>> Experimental
     }
     
     
@@ -103,14 +132,14 @@ class PreviewDataTableViewController: UITableViewController {
     {
             super.prepare(for: segue, sender: sender)
         
-            guard let previewDetailViewController = segue.destination as? DataViewController else
+            guard let newsDetailViewController = segue.destination as? DataViewController else
             {
                 //fatalError("Unexpected destination \(segue.destination)")
                 errorOccured(value: "Unexpected destination!")
                 return
             }
         
-            guard let selectedPreviewCell = sender as? PreviewDataTableViewCell else
+            guard let selectedNewsCell = sender as? PreviewDataTableViewCell else
             {
                 //fatalError("Unexpeced sender: \(sender!)")
                 errorOccured(value: "Unexpeced sender!")
@@ -118,26 +147,30 @@ class PreviewDataTableViewController: UITableViewController {
             
             }
         
-            guard let indexPath = tableView.indexPath(for: selectedPreviewCell) else
+            guard let indexPath = tableView.indexPath(for: selectedNewsCell) else
             {
                 // fatalError("The selected cellis not being displayed by the table")
                 errorOccured(value: "The selected cellis not being displayed by the table")
                 return
             }
         
-            let selectedPreview = previewData[indexPath.row]
-            previewDetailViewController.preview = selectedPreview
+             let selectedNews = newsToDisplay[indexPath.row]
+                newsDetailViewController.newsToDisplay = selectedNews
     }
-    
-    // MARK: Function for Activity Indicator
-    func createLoadingIndicator()
-    {
+
+
+}
+
+extension PreviewDataTableViewController: NewsView {
+ 
+    func startLoading() {
         loadingIndicator.center = view.center
         loadingIndicator.color = UIColor.blue
         loadingIndicator.startAnimating()
         view.addSubview(loadingIndicator)
     }
     
+<<<<<<< HEAD
     // MARK: Function for loading Data from URL
     @objc func LoadPreview()
     {
@@ -194,6 +227,24 @@ class PreviewDataTableViewController: UITableViewController {
     }
     
 
+=======
+    func fininshLoading() {
+        loadingIndicator.stopAnimating()
+    }
+    
+    func setNews(_ news: [NewsViewData]) {
+        newsToDisplay = news
+        tableView?.isHidden = false
+        tableView?.reloadData()
+    }
+    
+    func setEmptyNews() {
+        tableView.isHidden = true
+        errorOccured(value: "No news has been loaded :(")
+    }
+    
+>>>>>>> Experimental
     
 }
+
 

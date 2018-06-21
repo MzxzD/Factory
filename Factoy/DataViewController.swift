@@ -12,15 +12,15 @@ import AlamofireImage
 
 class DataViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate {
     
-    @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var photoImageView: UIImageView?
     @IBOutlet weak var headlineLabel: UILabel!
     @IBOutlet weak var storyText: UITextView!
     
-    var preview: Preview?
-    
+    var newsToDisplay: NewsViewData? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
 
         if let preview = preview
         {
@@ -53,5 +53,22 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
             errorOccured()
         }
     }
+=======
+        
+        Alamofire.request(URL (string: newsToDisplay!.image_url)!).responseImage
+                {
+                    response in
+                        if let image = response.result.value
+                        {
+                            self.photoImageView?.image = image
+                        }
+                }
+        headlineLabel.text = newsToDisplay?.headline
+        storyText.text = newsToDisplay?.story
+    }
+            
+    
+    
+>>>>>>> Experimental
 }
 
