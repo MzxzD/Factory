@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 
 struct NewsViewData {
@@ -33,9 +34,14 @@ class NewsPresenter {
         newsView = nil
     }
     
+    
+
+
+    
+    
     func getNews(){
         self.newsView?.startLoading()
-        newsService.getNews{[weak self] news in
+       newsService.getNews{[weak self] news in
             self?.newsView?.fininshLoading()
             if(news.count == 0){
                 self?.newsView?.setEmptyNews()
@@ -45,10 +51,19 @@ class NewsPresenter {
                 }
                 self?.newsView?.setNews(mappedNews)
             }
- 
+
         }
         
     }
+    // Setting Up timer for new data
+    func checkTimer(time: Date) {
+        let timeToCompare = time.addingTimeInterval(5)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(Int(timeToCompare.timeIntervalSinceReferenceDate - time.timeIntervalSinceReferenceDate))) {
+            self.getNews()
+            self.checkTimer(time: Date())
+        }
+    }
     
+
     
 }

@@ -16,10 +16,7 @@ class DataViewController: UIViewController, UITextFieldDelegate, UINavigationCon
     @IBOutlet weak var headlineLabel: UILabel!
     @IBOutlet weak var storyText: UITextView!
     
-    fileprivate let newsPresenter = NewsPresenter(newsService: NewsService())
     var newsToDisplay: NewsViewData? = nil
-    
-    // var photoImage_url = String()
 
     override func viewDidLoad() {
         super.viewDidLoad()

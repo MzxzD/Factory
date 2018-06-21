@@ -27,7 +27,7 @@ class NewsService {
                     for Articles in JSONArticles
                     {
                         // Saving important values
-                        var Values = Articles as! [String: String]
+                        let Values = Articles as! [String: String]
                         let headline = (Values["title"] as String?) ?? ""
                         let photo_url = (Values["urlToImage"] as String?) ?? ""
                         let story = (Values["description"] as String?) ?? ""

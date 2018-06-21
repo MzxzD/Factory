@@ -15,16 +15,7 @@ class PreviewDataTableViewController: UITableViewController {
     /*
     // MARK: Properties
     
-    var previewData = [Preview]()
-    var time = Date()
-    
-   
-    lazy var refresher: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.tintColor = UIColor.red
-        refreshControl.addTarget(self, action: #selector(LoadPreview), for: .valueChanged)
-        return refreshControl
-    }()
+
     */
     
     let loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
@@ -36,23 +27,11 @@ class PreviewDataTableViewController: UITableViewController {
         
         newsPresenter.attachView(self)
         newsPresenter.getNews()
-  /*
-        //Load  peview
-        createLoadingIndicator()
-        LoadPreview() */
+
     }
  
     override func viewDidAppear(_ animated: Bool) {
-    /*    let date = Date()
-        print(date)
-        let timeToCompare = time.addingTimeInterval(5*60)
-        print(timeToCompare)
-        if timeToCompare > date {
-            return
-        } else {
-            print("5 minutes has passed, time to reload data! :)")
-            LoadPreview()
-        }*/
+        newsPresenter.checkTimer(time: Date())
     }
 
     // MARK: - Table view data source
@@ -63,7 +42,6 @@ class PreviewDataTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return newsToDisplay.count
     }
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
@@ -127,6 +105,7 @@ class PreviewDataTableViewController: UITableViewController {
 }
 
 extension PreviewDataTableViewController: NewsView {
+ 
     func startLoading() {
         loadingIndicator.center = view.center
         loadingIndicator.color = UIColor.blue
@@ -146,9 +125,9 @@ extension PreviewDataTableViewController: NewsView {
     
     func setEmptyNews() {
         tableView.isHidden = true
+        errorOccured(value: "No news has been loaded :(")
     }
     
-
     
 }
 
